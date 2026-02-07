@@ -8,6 +8,7 @@ import (
 type LLMService struct {
 	doubaoService  *DoubaoService
 	hunyuanService *HunyuanService
+	qwenService    *QwenService
 }
 
 // NewLLMService 创建LLM服务
@@ -15,6 +16,7 @@ func NewLLMService() *LLMService {
 	return &LLMService{
 		doubaoService:  NewDoubaoService(),
 		hunyuanService: NewHunyuanService(),
+		qwenService:    NewQwenService(),
 	}
 }
 
@@ -26,6 +28,11 @@ func (s *LLMService) GetDoubaoService() *DoubaoService {
 // GetHunyuanService 获取混元服务
 func (s *LLMService) GetHunyuanService() *HunyuanService {
 	return s.hunyuanService
+}
+
+// GetQwenService 获取通义千问服务
+func (s *LLMService) GetQwenService() *QwenService {
+	return s.qwenService
 }
 
 // ListModels 获取支持的模型列表
@@ -46,6 +53,15 @@ func (s *LLMService) ListModels(provider string) ([]*pb.ModelInfo, error) {
 			ModelName:     "混元 Turbos Latest",
 			Provider:      "hunyuan",
 			Description:   "腾讯混元最新模型，支持多模态",
+			SupportStream: true,
+			SupportVision: true,
+		},
+		// 通义千问模型
+		{
+			ModelId:       "qwen3-omni-flash",
+			ModelName:     "通义千问 Qwen3 Omni Flash",
+			Provider:      "qwen",
+			Description:   "阿里通义千问最新模型，支持多模态",
 			SupportStream: true,
 			SupportVision: true,
 		},
@@ -73,8 +89,8 @@ func GetProviderFromModelID(modelID string) string {
 	if len(modelID) >= 7 && modelID[:7] == "hunyuan" {
 		return "hunyuan"
 	}
-	if len(modelID) >= 8 && modelID[:8] == "deepseek" {
-		return "deepseek"
+	if len(modelID) >= 4 && modelID[:4] == "qwen" {
+		return "qwen"
 	}
 	// 默认使用豆包
 	return "doubao"

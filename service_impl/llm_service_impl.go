@@ -39,10 +39,9 @@ func (s *LLMServiceImpl) StreamChat(req *pb.StreamChatRequest, stream pb.LLMServ
 		// 调用混元 service 处理
 		return s.llmService.GetHunyuanService().StreamChat(ctx, req, stream)
 
-	case "deepseek":
-		log.Printf("DeepSeek模型暂未实现")
-		// TODO: 实现DeepSeek模型
-		return s.llmService.GetDoubaoService().StreamChat(ctx, req, stream)
+	case "qwen":
+		// 调用通义千问 service 处理
+		return s.llmService.GetQwenService().StreamChat(ctx, req, stream)
 
 	default:
 		log.Printf("未知的模型提供商: %s，使用默认豆包", provider)

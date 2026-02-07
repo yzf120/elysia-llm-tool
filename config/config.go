@@ -15,9 +15,9 @@ type Config struct {
 	HunyuanSecretID  string
 	HunyuanSecretKey string
 
-	// DeepSeek配置
-	DeepSeekAPIKey  string
-	DeepSeekBaseURL string
+	// 通义千问配置
+	QwenAPIKey  string
+	QwenBaseURL string
 
 	// 服务配置
 	ServerPort int
@@ -42,9 +42,9 @@ func InitConfig() *Config {
 		HunyuanSecretID:  getEnv("HUNYUAN_SECRET_ID", ""),
 		HunyuanSecretKey: getEnv("HUNYUAN_SECRET_KEY", ""),
 
-		// DeepSeek配置
-		DeepSeekAPIKey:  getEnv("DEEPSEEK_API_KEY", ""),
-		DeepSeekBaseURL: getEnv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+		// 通义千问配置
+		QwenAPIKey:  getEnv("DASHSCOPE_API_KEY", ""),
+		QwenBaseURL: getEnv("QWEN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
 
 		// 服务配置
 		ServerPort: 9001,

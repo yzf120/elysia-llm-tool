@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/joho/godotenv v1.5.1
+	github.com/sashabaranov/go-openai v1.41.2
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.46
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/hunyuan v1.3.43
 	github.com/volcengine/volcengine-go-sdk v1.0.167

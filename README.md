@@ -13,7 +13,7 @@
 
 [//]: # (- ✅ **混元（Hunyuan）** - 腾讯云)
 
-[//]: # (- 🚧 **DeepSeek** - 待实现)
+[//]: # (- ✅ **通义千问（Qwen）** - 阿里云)
 
 [//]: # ()
 [//]: # (## 项目架构)
@@ -29,7 +29,7 @@
 
 [//]: # (│   ├── hunyuan_client.go   # 混元客户端)
 
-[//]: # (│   └── deepseek_client.go  # DeepSeek客户端)
+[//]: # (│   └── qwen_client.go      # 通义千问客户端)
 
 [//]: # (├── service/             # 业务逻辑层)
 
@@ -37,7 +37,9 @@
 
 [//]: # (│   ├── doubao_service.go   # 豆包业务逻辑)
 
-[//]: # (│   └── hunyuan_service.go  # 混元业务逻辑)
+[//]: # (│   ├── hunyuan_service.go  # 混元业务逻辑)
+
+[//]: # (│   └── qwen_service.go     # 通义千问业务逻辑)
 
 [//]: # (├── service_impl/        # RPC 实现层)
 
@@ -131,6 +133,13 @@
 [//]: # (TENCENTCLOUD_SECRET_ID=your_tencentcloud_secret_id_here)
 
 [//]: # (TENCENTCLOUD_SECRET_KEY=your_tencentcloud_secret_key_here)
+
+[//]: # ()
+[//]: # (# 阿里通义千问配置)
+
+[//]: # (DASHSCOPE_API_KEY=your_dashscope_api_key_here)
+
+[//]: # (QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1)
 
 [//]: # ()
 [//]: # (# 模型默认参数配置)
@@ -259,7 +268,7 @@
 
 [//]: # (message ListModelsRequest {)
 
-[//]: # (  string provider = 1;  // 提供商过滤（可选）：doubao/hunyuan/deepseek)
+[//]: # (  string provider = 1;  // 提供商过滤（可选）：doubao/hunyuan/qwen)
 
 [//]: # (})
 
@@ -320,6 +329,16 @@
 [//]: # (| hunyuan-turbos-latest | 混元 Turbos Latest | 腾讯混元最新模型 | ✅ | ✅ |)
 
 [//]: # ()
+[//]: # (### 通义千问（Qwen）)
+
+[//]: # ()
+[//]: # (| 模型ID | 模型名称 | 描述 | 流式 | 多模态 |)
+
+[//]: # (|--------|---------|------|------|--------|)
+
+[//]: # (| qwen3-omni-flash | 通义千问 Qwen3 Omni Flash | 阿里通义千问最新模型 | ✅ | ✅ |)
+
+[//]: # ()
 [//]: # (## 开发指南)
 
 [//]: # ()
@@ -337,30 +356,30 @@
 [//]: # (5. **更新模型列表**：在 `service/llm_service.go` 的 `ListModels` 方法中添加模型信息)
 
 [//]: # ()
-[//]: # (### 示例：添加 DeepSeek)
+[//]: # (### 示例：添加新模型)
 
 [//]: # ()
 [//]: # (```go)
 
-[//]: # (// 1. client/deepseek_client.go)
+[//]: # (// 1. client/newmodel_client.go)
 
-[//]: # (func GetDeepSeekClient&#40;&#41; *deepseek.Client {)
+[//]: # (func GetNewModelClient&#40;&#41; *newmodel.Client {)
 
 [//]: # (    // 实现客户端单例)
 
 [//]: # (})
 
 [//]: # ()
-[//]: # (// 2. service/deepseek_service.go)
+[//]: # (// 2. service/newmodel_service.go)
 
-[//]: # (type DeepSeekService struct {)
+[//]: # (type NewModelService struct {)
 
 [//]: # (    cfg *config.Config)
 
 [//]: # (})
 
 [//]: # ()
-[//]: # (func &#40;s *DeepSeekService&#41; StreamChat&#40;ctx context.Context, req *pb.StreamChatRequest, stream pb.LLMService_StreamChatServer&#41; error {)
+[//]: # (func &#40;s *NewModelService&#41; StreamChat&#40;ctx context.Context, req *pb.StreamChatRequest, stream pb.LLMService_StreamChatServer&#41; error {)
 
 [//]: # (    // 实现流式对话逻辑)
 
@@ -369,18 +388,18 @@
 [//]: # ()
 [//]: # (// 3. service/llm_service.go)
 
-[//]: # (func &#40;s *LLMService&#41; GetDeepSeekService&#40;&#41; *DeepSeekService {)
+[//]: # (func &#40;s *LLMService&#41; GetNewModelService&#40;&#41; *NewModelService {)
 
-[//]: # (    return s.deepseekService)
+[//]: # (    return s.newmodelService)
 
 [//]: # (})
 
 [//]: # ()
 [//]: # (// 4. service_impl/llm_service_impl.go)
 
-[//]: # (case "deepseek":)
+[//]: # (case "newmodel":)
 
-[//]: # (    return s.llmService.GetDeepSeekService&#40;&#41;.StreamChat&#40;ctx, req, stream&#41;)
+[//]: # (    return s.llmService.GetNewModelService&#40;&#41;.StreamChat&#40;ctx, req, stream&#41;)
 
 [//]: # (```)
 
@@ -402,6 +421,10 @@
 [//]: # (| TENCENTCLOUD_SECRET_ID | 腾讯云 Secret ID | - |)
 
 [//]: # (| TENCENTCLOUD_SECRET_KEY | 腾讯云 Secret Key | - |)
+
+[//]: # (| DASHSCOPE_API_KEY | 阿里云 DashScope API Key | - |)
+
+[//]: # (| QWEN_BASE_URL | 通义千问 API 地址 | https://dashscope.aliyuncs.com/compatible-mode/v1 |)
 
 [//]: # (| DEFAULT_TEMPERATURE | 默认温度参数 | 0.7 |)
 
@@ -498,6 +521,99 @@
 [//]: # (kubectl apply -f k8s/deployment.yaml)
 
 [//]: # (kubectl apply -f k8s/service.yaml)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (## 使用示例)
+
+[//]: # ()
+[//]: # (### 豆包模型)
+
+[//]: # ()
+[//]: # (```go)
+
+[//]: # (req := &pb.StreamChatRequest{)
+
+[//]: # (    ModelId: "doubao-seed-1-6-lite-251015",)
+
+[//]: # (    Messages: []*pb.ChatMessage{)
+
+[//]: # (        {)
+
+[//]: # (            Role: "user",)
+
+[//]: # (            Content: []*pb.ContentPart{)
+
+[//]: # (                {Type: "text", Text: "你好"},)
+
+[//]: # (            },)
+
+[//]: # (        },)
+
+[//]: # (    },)
+
+[//]: # (})
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (### 混元模型)
+
+[//]: # ()
+[//]: # (```go)
+
+[//]: # (req := &pb.StreamChatRequest{)
+
+[//]: # (    ModelId: "hunyuan-turbos-latest",)
+
+[//]: # (    Messages: []*pb.ChatMessage{)
+
+[//]: # (        {)
+
+[//]: # (            Role: "user",)
+
+[//]: # (            Content: []*pb.ContentPart{)
+
+[//]: # (                {Type: "text", Text: "你好"},)
+
+[//]: # (            },)
+
+[//]: # (        },)
+
+[//]: # (    },)
+
+[//]: # (})
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (### 通义千问模型)
+
+[//]: # ()
+[//]: # (```go)
+
+[//]: # (req := &pb.StreamChatRequest{)
+
+[//]: # (    ModelId: "qwen3-omni-flash",)
+
+[//]: # (    Messages: []*pb.ChatMessage{)
+
+[//]: # (        {)
+
+[//]: # (            Role: "user",)
+
+[//]: # (            Content: []*pb.ContentPart{)
+
+[//]: # (                {Type: "text", Text: "你好"},)
+
+[//]: # (            },)
+
+[//]: # (        },)
+
+[//]: # (    },)
+
+[//]: # (})
 
 [//]: # (```)
 
