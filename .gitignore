@@ -1,0 +1,8 @@
+.env
+*.log
+logs/
+*.pb.go
+*.trpc.go
+elysia-llm-tool
+vendor/
+.DS_Store

@@ -1,0 +1,35 @@
+# 全局配置
+global:
+  namespace: Development
+  env_name: dev
+
+# 服务端配置
+server:
+  app: elysia
+  server: llmtool
+  service:
+    # LLM Tool RPC 服务
+    - name: trpc.elysia.llmtool.LLMService
+      ip: 127.0.0.1
+      port: 9001
+      network: tcp
+      protocol: trpc
+      timeout: 60000 # 60秒超时，支持长时间流式响应
+
+# 插件配置
+plugins:
+  # 日志配置
+  log:
+    default:
+      - writer: console
+        level: debug
+        format: console
+      - writer: file
+        level: info
+        format: json
+        writer_config:
+          filename: ./logs/trpc.log
+          max_size: 100
+          max_backups: 10
+          max_age: 7
+          compress: false
