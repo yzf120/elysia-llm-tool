@@ -7,7 +7,7 @@ require (
 	github.com/sashabaranov/go-openai v1.41.2
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.46
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/hunyuan v1.3.43
-	github.com/volcengine/volcengine-go-sdk v1.0.167
+	github.com/volcengine/volcengine-go-sdk v1.2.16
 	google.golang.org/protobuf v1.33.0
 	trpc.group/trpc-go/trpc-go v1.0.3
 )
@@ -43,6 +43,7 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
+	gopkg.in/yaml.v2 v2.2.8 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	trpc.group/trpc-go/tnet v1.0.1 // indirect
 	trpc.group/trpc/trpc-protocol/pb/go/trpc v1.0.0 // indirect

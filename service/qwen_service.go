@@ -27,44 +27,45 @@ func NewQwenService() *QwenService {
 
 // StreamChat 通义千问流式对话
 func (s *QwenService) StreamChat(ctx context.Context, req *pb.StreamChatRequest, stream pb.LLMService_StreamChatServer) error {
-	client := client.GetQwenClient()
+	c := client.GetQwenClient()
 
-	// 转换消息格式
 	messages := s.convertToQwenMessages(req.Messages)
 
-	// 构建请求
 	qwenReq := openai.ChatCompletionRequest{
 		Model:    req.ModelId,
 		Messages: messages,
 		Stream:   true,
 	}
 
-	// 从配置中设置默认参数
 	temperature := float32(s.cfg.DefaultTemperature)
 	qwenReq.Temperature = temperature
-
 	maxTokens := int(s.cfg.DefaultMaxTokens)
 	qwenReq.MaxTokens = maxTokens
-
 	topP := float32(s.cfg.DefaultTopP)
 	qwenReq.TopP = topP
 
-	// 创建流式请求
-	qwenStream, err := client.CreateChatCompletionStream(ctx, qwenReq)
+	// 处理深度思考模式
+	// 千问深度思考通过 ChatTemplateKwargs 传递 enable_thinking: true
+	if req.ExtraParams != nil {
+		if v, ok := req.ExtraParams["enable_thinking"]; ok && v == "true" {
+			qwenReq.ChatTemplateKwargs = map[string]any{
+				"enable_thinking": true,
+			}
+			log.Printf("[QwenService] 已开启深度思考模式，模型: %s", req.ModelId)
+		}
+	}
+
+	qwenStream, err := c.CreateChatCompletionStream(ctx, qwenReq)
 	if err != nil {
 		log.Printf("创建通义千问流式请求失败: %v", err)
 		return fmt.Errorf("[%d]%s", errs.ErrModelRequestFailed, err.Error())
 	}
 	defer qwenStream.Close()
 
-	// 读取流式响应
 	for {
 		recv, err := qwenStream.Recv()
 		if err == io.EOF {
-			// 发送结束标记
-			endResp := &pb.StreamChatResponse{
-				IsEnd: true,
-			}
+			endResp := &pb.StreamChatResponse{IsEnd: true}
 			if err := stream.Send(endResp); err != nil {
 				log.Printf("发送结束标记失败: %v", err)
 				return fmt.Errorf("[%d]%s", errs.ErrModelStreamFailed, err.Error())
@@ -72,14 +73,13 @@ func (s *QwenService) StreamChat(ctx context.Context, req *pb.StreamChatRequest,
 			return nil
 		}
 		if err != nil {
-			log.Printf("接收流式响应失败: %v", err)
+			log.Printf("接收通义千问流式响应失败: %v", err)
 			return fmt.Errorf("[%d]%s", errs.ErrModelStreamFailed, err.Error())
 		}
 
-		// 转换并发送响应
 		resp := s.convertQwenStreamResponse(&recv)
 		if err := stream.Send(resp); err != nil {
-			log.Printf("发送响应失败: %v", err)
+			log.Printf("发送通义千问响应失败: %v", err)
 			return fmt.Errorf("[%d]%s", errs.ErrModelStreamFailed, err.Error())
 		}
 	}
@@ -138,11 +138,16 @@ func (s *QwenService) convertQwenStreamResponse(resp *openai.ChatCompletionStrea
 	if len(resp.Choices) > 0 {
 		choices := make([]*pb.Choice, 0, len(resp.Choices))
 		for _, choice := range resp.Choices {
+			content := choice.Delta.Content
+			// 只要有思考内容就用 <think> 标签包裹输出（由模型自行决定是否思考）
+			if choice.Delta.ReasoningContent != "" {
+				content = "<think>" + choice.Delta.ReasoningContent + "</think>" + content
+			}
 			c := &pb.Choice{
 				Index: int32(choice.Index),
 				Delta: &pb.Delta{
 					Role:    choice.Delta.Role,
-					Content: choice.Delta.Content,
+					Content: content,
 				},
 				FinishReason: string(choice.FinishReason),
 			}

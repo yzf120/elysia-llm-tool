@@ -35,10 +35,6 @@ func (s *LLMServiceImpl) StreamChat(req *pb.StreamChatRequest, stream pb.LLMServ
 		// 调用豆包 service 处理
 		return s.llmService.GetDoubaoService().StreamChat(ctx, req, stream)
 
-	case "hunyuan":
-		// 调用混元 service 处理
-		return s.llmService.GetHunyuanService().StreamChat(ctx, req, stream)
-
 	case "qwen":
 		// 调用通义千问 service 处理
 		return s.llmService.GetQwenService().StreamChat(ctx, req, stream)

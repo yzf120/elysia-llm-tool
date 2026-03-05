@@ -14,7 +14,7 @@ server:
       port: 9001
       network: tcp
       protocol: trpc
-      timeout: 60000 # 60秒超时，支持长时间流式响应
+      timeout: 0 # 不设超时，深度思考模型可能需要较长时间
 
 # 插件配置
 plugins:

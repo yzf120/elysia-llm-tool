@@ -1,8 +1,10 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // Config 全局配置
@@ -34,9 +36,9 @@ var globalConfig *Config
 // InitConfig 初始化配置
 func InitConfig() *Config {
 	globalConfig = &Config{
-		// 豆包配置
+		// 豆包配置（强制使用北京节点，深圳节点 ark.cn-shenzhen.volces.com 不可用）
 		DoubaoAPIKey:  getEnv("DOUBAO_API_KEY", ""),
-		DoubaoBaseURL: getEnv("DOUBAO_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3"),
+		DoubaoBaseURL: getDoubaoBaseURL(),
 
 		// 混元配置
 		HunyuanSecretID:  getEnv("HUNYUAN_SECRET_ID", ""),
@@ -86,6 +88,20 @@ func getEnvFloat32(key string, defaultValue float32) float32 {
 		return defaultValue
 	}
 	return float32(f)
+}
+
+// getDoubaoBaseURL 获取豆包BaseURL，强制使用北京节点（深圳节点不可用）
+func getDoubaoBaseURL() string {
+	url := os.Getenv("DOUBAO_BASE_URL")
+	if url == "" {
+		return "https://ark.cn-beijing.volces.com/api/v3"
+	}
+	// 如果环境变量设置了深圳节点，强制替换为北京节点并打印警告
+	if strings.Contains(url, "shenzhen") {
+		log.Printf("[Config] 警告：DOUBAO_BASE_URL 设置了深圳节点 (%s)，已自动切换为北京节点", url)
+		return "https://ark.cn-beijing.volces.com/api/v3"
+	}
+	return url
 }
 
 // getEnvInt32 获取 int32 类型的环境变量
