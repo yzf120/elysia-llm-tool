@@ -1,4 +1,6 @@
 .env
+setup-env.sh
+setup-env.*.sh
 *.log
 logs/
 *.pb.go

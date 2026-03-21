@@ -25,6 +25,9 @@ func main() {
 	if cfg.DoubaoAPIKey == "" {
 		log.Println("警告: DOUBAO_API_KEY 未设置，豆包模型将无法使用")
 	}
+	if cfg.VolcAccessKeyID == "" || cfg.VolcSecretAccessKey == "" {
+		log.Println("警告: VOLC_ACCESS_KEY_ID 或 VOLC_SECRET_ACCESS_KEY 未设置，推理用量查询将无法使用")
+	}
 	
 	// 打印模型默认参数配置
 	log.Printf("模型默认参数: Temperature=%.2f, MaxTokens=%d, TopP=%.2f, ReasoningEffort=%s",
@@ -41,6 +44,7 @@ func main() {
 	log.Println("支持的接口:")
 	log.Println("  - StreamChat: 流式对话")
 	log.Println("  - ListModels: 获取模型列表")
+	log.Println("  - GetInferenceUsage: 查询推理用量")
 
 	// 启动服务器
 	if err := s.Serve(); err != nil {

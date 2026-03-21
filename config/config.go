@@ -13,6 +13,11 @@ type Config struct {
 	DoubaoAPIKey  string
 	DoubaoBaseURL string
 
+	// 火山开放平台配置（用于调用 GetInferenceUsage 等管理API）
+	VolcAccessKeyID     string
+	VolcSecretAccessKey string
+	VolcRegion          string
+
 	// 混元配置
 	HunyuanSecretID  string
 	HunyuanSecretKey string
@@ -39,6 +44,11 @@ func InitConfig() *Config {
 		// 豆包配置（强制使用北京节点，深圳节点 ark.cn-shenzhen.volces.com 不可用）
 		DoubaoAPIKey:  getEnv("DOUBAO_API_KEY", ""),
 		DoubaoBaseURL: getDoubaoBaseURL(),
+
+		// 火山开放平台配置（调用推理用量等管理API）
+		VolcAccessKeyID:     getEnv("VOLC_ACCESS_KEY_ID", ""),
+		VolcSecretAccessKey: getEnv("VOLC_SECRET_ACCESS_KEY", ""),
+		VolcRegion:          getEnv("VOLC_REGION", "cn-beijing"),
 
 		// 混元配置
 		HunyuanSecretID:  getEnv("HUNYUAN_SECRET_ID", ""),

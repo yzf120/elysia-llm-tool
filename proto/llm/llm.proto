@@ -10,6 +10,9 @@ service LLMService {
   
   // 获取支持的模型列表
   rpc ListModels (ListModelsRequest) returns (ListModelsResponse) {}
+
+  // 查询推理用量
+  rpc GetInferenceUsage (GetInferenceUsageRequest) returns (GetInferenceUsageResponse) {}
 }
 
 // 消息内容部分
@@ -88,4 +91,40 @@ message ModelInfo {
   string description = 4; // 描述
   bool support_stream = 5; // 是否支持流式
   bool support_vision = 6; // 是否支持视觉
+}
+
+// ==================== 推理用量相关 ====================
+
+// 推理用量过滤条件
+message UsageFilter {
+  string key = 1;            // 过滤关键词：ModelEndpoint/ModelName/BillingStatus 等
+  repeated string values = 2; // 精准匹配值
+  string value_like = 3;      // 模糊匹配值
+}
+
+// 查询推理用量请求
+message GetInferenceUsageRequest {
+  string query_interval = 1;         // 查询周期：Day/Hour
+  string start_time = 2;             // 开始时间 yyyy-mm-dd
+  string end_time = 3;               // 结束时间 yyyy-mm-dd
+  repeated UsageFilter filters = 4;  // 过滤条件
+  string project_name = 5;           // 项目名称（可选）
+}
+
+// 用量数据字段描述
+message UsageField {
+  string name = 1;  // 字段名称
+  string type = 2;  // 字段类型
+}
+
+// 单条用量数据
+message UsageDataRow {
+  repeated string values = 1; // 按 fields 顺序排列的值
+}
+
+// 查询推理用量响应
+message GetInferenceUsageResponse {
+  repeated UsageField fields = 1;    // 列元素
+  repeated UsageDataRow data = 2;    // 数据行
+  int32 data_count = 3;              // 数据条数
 }

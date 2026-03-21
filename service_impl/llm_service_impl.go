@@ -63,3 +63,17 @@ func (s *LLMServiceImpl) ListModels(ctx context.Context, req *pb.ListModelsReque
 		Models: models,
 	}, nil
 }
+
+// GetInferenceUsage 查询推理用量
+func (s *LLMServiceImpl) GetInferenceUsage(ctx context.Context, req *pb.GetInferenceUsageRequest) (*pb.GetInferenceUsageResponse, error) {
+	log.Printf("收到推理用量查询请求，周期: %s, 时间: %s ~ %s", req.QueryInterval, req.StartTime, req.EndTime)
+
+	resp, err := s.llmService.GetInferenceUsageService().GetInferenceUsage(req)
+	if err != nil {
+		log.Printf("查询推理用量失败: %v", err)
+		return nil, err
+	}
+
+	log.Printf("推理用量查询成功，返回 %d 条数据", resp.DataCount)
+	return resp, nil
+}

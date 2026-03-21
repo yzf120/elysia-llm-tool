@@ -6,15 +6,17 @@ import (
 
 // LLMService LLM服务层（通用）
 type LLMService struct {
-	doubaoService *DoubaoService
-	qwenService   *QwenService
+	doubaoService         *DoubaoService
+	qwenService           *QwenService
+	inferenceUsageService *InferenceUsageService
 }
 
 // NewLLMService 创建LLM服务
 func NewLLMService() *LLMService {
 	return &LLMService{
-		doubaoService: NewDoubaoService(),
-		qwenService:   NewQwenService(),
+		doubaoService:         NewDoubaoService(),
+		qwenService:           NewQwenService(),
+		inferenceUsageService: NewInferenceUsageService(),
 	}
 }
 
@@ -26,6 +28,11 @@ func (s *LLMService) GetDoubaoService() *DoubaoService {
 // GetQwenService 获取通义千问服务
 func (s *LLMService) GetQwenService() *QwenService {
 	return s.qwenService
+}
+
+// GetInferenceUsageService 获取推理用量查询服务
+func (s *LLMService) GetInferenceUsageService() *InferenceUsageService {
+	return s.inferenceUsageService
 }
 
 // ListModels 获取支持的模型列表
