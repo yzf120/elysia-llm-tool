@@ -77,12 +77,48 @@ func (s *QwenService) StreamChat(ctx context.Context, req *pb.StreamChatRequest,
 			return fmt.Errorf("[%d]%s", errs.ErrModelStreamFailed, err.Error())
 		}
 
+		// 过滤无意义的空 chunk（content 为空、无 finish_reason、无 usage）
+		if s.isEmptyChunk(&recv) {
+			continue
+		}
+
 		resp := s.convertQwenStreamResponse(&recv)
 		if err := stream.Send(resp); err != nil {
 			log.Printf("发送通义千问响应失败: %v", err)
 			return fmt.Errorf("[%d]%s", errs.ErrModelStreamFailed, err.Error())
 		}
 	}
+}
+
+// isEmptyChunk 判断是否为无意义的空 chunk（应跳过不发送）
+func (s *QwenService) isEmptyChunk(resp *openai.ChatCompletionStreamResponse) bool {
+	if len(resp.Choices) == 0 {
+		return resp.Usage == nil
+	}
+
+	choice := resp.Choices[0]
+
+	// 有 finish_reason 的 chunk 是有意义的
+	if choice.FinishReason != "" {
+		return false
+	}
+
+	// 有实际内容的 chunk 是有意义的
+	if choice.Delta.Content != "" {
+		return false
+	}
+
+	// 有思考内容的 chunk 是有意义的
+	if choice.Delta.ReasoningContent != "" {
+		return false
+	}
+
+	// 有 usage 信息的 chunk 是有意义的
+	if resp.Usage != nil && (resp.Usage.PromptTokens > 0 || resp.Usage.CompletionTokens > 0 || resp.Usage.TotalTokens > 0) {
+		return false
+	}
+
+	return true
 }
 
 // convertToQwenMessages 转换消息格式到通义千问格式
