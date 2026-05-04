@@ -45,13 +45,20 @@ func (s *QwenService) StreamChat(ctx context.Context, req *pb.StreamChatRequest,
 	qwenReq.TopP = topP
 
 	// 处理深度思考模式
-	// 千问深度思考通过 ChatTemplateKwargs 传递 enable_thinking: true
+	// 千问深度思考通过 ChatTemplateKwargs 传递 enable_thinking: true/false
 	if req.ExtraParams != nil {
-		if v, ok := req.ExtraParams["enable_thinking"]; ok && v == "true" {
-			qwenReq.ChatTemplateKwargs = map[string]any{
-				"enable_thinking": true,
+		if v, ok := req.ExtraParams["enable_thinking"]; ok {
+			if v == "true" {
+				qwenReq.ChatTemplateKwargs = map[string]any{
+					"enable_thinking": true,
+				}
+				log.Printf("[QwenService] 已开启深度思考模式，模型: %s", req.ModelId)
+			} else if v == "false" {
+				qwenReq.ChatTemplateKwargs = map[string]any{
+					"enable_thinking": false,
+				}
+				log.Printf("[QwenService] 已禁用深度思考模式（加速），模型: %s", req.ModelId)
 			}
-			log.Printf("[QwenService] 已开启深度思考模式，模型: %s", req.ModelId)
 		}
 	}
 
